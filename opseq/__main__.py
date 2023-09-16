@@ -1,5 +1,3 @@
-class OpSeq:
-
 from __future__ import annotations
 
 import itertools
@@ -25,7 +23,7 @@ OpsCallableFromCurr = Callable[[Op], Iterable[Op]]
 OPTIONS_EXCEPTION = TypeError('options, options_i, options_callable are mutually exclusive. Only 1 must be not None')
 
 
-class SequenceBuilder:
+class OpSeq:
     def __init__(  # noqa: C901
         self,
         n: int,
