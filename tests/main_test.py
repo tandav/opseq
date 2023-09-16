@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import itertools
 from collections import Counter
 
 import pytest
+
 from opseq import OpSeq
 
 
