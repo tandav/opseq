@@ -51,7 +51,7 @@ tag = true
     '^version = "{pep440_version}"',
     '^current_version = "{version}"',
 ]
-"src/opseq/__init__.py" = [
+"opseq/__init__.py" = [
     "^__version__ = '{pep440_version}'",
 ]
 
