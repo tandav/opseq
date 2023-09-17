@@ -37,7 +37,7 @@ def test_constraint(generator1, constraint, expected):
     (AppendOp([['a'], ['A'], ['b']]), lambda op: op[0].lower(), [(['a'], ['b']), (['A'], ['b']), (['b'], ['a']), (['b'], ['A'])]),
 ])
 def test_unique_key_op(generator, key, expected):
-    results = list(OpSeq(2, generator, unique_key_op=key))
+    results = list(OpSeq(2, generator, prefix_constraints=[constraints_.UniqueOp(key)]))
     results_no_unique = list(OpSeq(2, generator))
     assert results == expected
     assert all(len(seq) == len(set(map(key, seq))) for seq in results)
