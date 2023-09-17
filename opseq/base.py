@@ -12,7 +12,7 @@ from opseq.types import Op
 from opseq.types import LookbackConstraint
 from opseq.types import Seq
 from opseq.types import Constraint
-from opseq.types import IConstraint
+from opseq.types import UniqueKeySeq
 from opseq import constraints
 
 
@@ -25,6 +25,7 @@ class OpSeqBase(abc.ABC):
         prefix_constraints: Iterable[Constraint[Op]] = (),
         # lookback_constraints: Iterable[LookbackConstraint[Op]] = (),
         # unique_key: Callable[[Op], Any] | None = None,
+        unique_key_seq: UniqueKeySeq[Op] | None = None,
         prefix: Seq[Op] = (),
         # loop: bool = False,
     ):
@@ -45,12 +46,14 @@ class OpSeqBase(abc.ABC):
         # self.curr_prev_constraint = curr_prev_constraint
         # self.candidate_constraint = candidate_constraint
         # self.i_constraints = i_constraints
-        # self.unique_key = unique_key
+        self.unique_key_seq = unique_key_seq
+        self.seen_keys = set()
         self.prefix = prefix
         # self.loop = loop
 
 
     def __iter__(self) -> Generator[Seq[Op], None, None]:
+        self.seen_keys = set()
         return self._iter(self.prefix)
 
     def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:
@@ -61,6 +64,11 @@ class OpSeqBase(abc.ABC):
             return
         if not all(constraint(prefix) for constraint in self.constraints):
             return
+        if self.unique_key_seq is not None:
+            key = self.unique_key_seq(prefix)
+            if key in self.seen_keys:
+                return
+            self.seen_keys.add(key)
         yield prefix
 
 
