@@ -49,9 +49,6 @@ class OpSeqBase(abc.ABC):
         self.prefix = prefix
         # self.loop = loop
 
-    # @abc.abstractmethod
-    # def generate_options(self, seq: Seq[Op]) -> Generator[Op, None, None]:
-    #     ...
 
     def __iter__(self) -> Generator[Seq[Op], None, None]:
         return self._iter(self.prefix)
@@ -60,10 +57,7 @@ class OpSeqBase(abc.ABC):
         if prefix and not all(constraint(prefix) for constraint in self.prefix_constraints):
             return
         if len(prefix) < self.n:
-            yield from itertools.chain.from_iterable(
-                self._iter(seq)
-                for seq in self.generator(prefix)
-            )
+            yield from itertools.chain.from_iterable(self._iter(seq) for seq in self.generator(prefix))
             return
         if not all(constraint(prefix) for constraint in self.constraints):
             return
