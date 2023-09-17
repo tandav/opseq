@@ -47,13 +47,39 @@ def test_unique_key_op(generator, key, expected):
     assert any(len(seq) != len(set(map(key, seq))) for seq in results_no_unique)
 
 
-
-@pytest.mark.parametrize('constraints, expected', [
-    ({-1: lambda prev, curr: prev != curr}, [(0, 1), (1, 0)]),
-    ({-1: lambda prev, curr: prev == curr}, [(0, 0), (1, 1)]),
+@pytest.mark.parametrize('opseq, expected', [
+    (
+        OpSeq(2, AppendOp(options=[0, 1]), prefix_constraints=constraints_.Lookback.from_dict({-1: lambda prev, curr: prev != curr})), 
+        [(0, 1), (1, 0)],
+    ),
+    (
+        OpSeq(2, AppendOp(options=[0, 1]), prefix_constraints=constraints_.Lookback.from_dict({-1: lambda prev, curr: prev == curr})), 
+        [(0, 0), (1, 1)],
+    ),
+    (
+        OpSeq(3, AppendOp(options=[0, 1]), prefix_constraints=constraints_.Lookback.from_dict({
+            -1: lambda prev, curr: prev != curr,
+            -2: lambda prev, curr: prev == curr,
+        })), 
+        [(0, 1, 0), (1, 0, 1)],
+    ),
+    (
+        OpSeq(3, AppendOp(options=[0, 1]), prefix_constraints=constraints_.Lookback.from_dict({
+            -1: lambda prev, curr: prev == curr,
+            -2: lambda prev, curr: prev == curr,
+        })), 
+        [(0, 0, 0), (1, 1, 1)],
+    ),
+    (
+        OpSeq(3, AppendOp(options=[0, 1, 2]), prefix_constraints=constraints_.Lookback.from_dict({
+            -1: lambda prev, curr: prev != curr,
+            -2: lambda prev, curr: prev != curr,
+        })), 
+        [(0, 1, 2), (0, 2, 1), (1, 0, 2), (1, 2, 0), (2, 0, 1), (2, 1, 0)],
+    ),
 ])
-def test_lookback_constraint(generator1, constraints, expected):
-    assert list(OpSeq(2, generator1, lookback_constraints=constraints)) == expected
+def test_lookback_constraint(opseq, expected):
+    assert list(opseq) == expected
 
 def is_even(x: int) -> bool:
     return x % 2 == 0

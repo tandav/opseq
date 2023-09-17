@@ -6,6 +6,7 @@ from opseq.types import Seq
 from opseq.types import Op
 from collections.abc import Generator
 
+
 class Lookback:
     def __init__(self, index, constraint):
         if index >= 0:
@@ -13,11 +14,15 @@ class Lookback:
         self.index = index
         self.constraint = constraint
 
+    @classmethod
+    def from_dict(cls, d: dict[int, tp.Callable[[Op, Op], bool]]) -> list[Lookback]:
+        return [cls(index, constraint) for index, constraint in d.items()]
+
     def __call__(self, seq: Seq[Op]) -> bool:
         if len(seq) == 1:
             return True
-        if abs(self.index) > len(seq):
-            return False
+        if abs(self.index) >= len(seq):
+            return True
         return self.constraint(seq[self.index - 1], seq[-1])
 
 
