@@ -21,9 +21,9 @@ class OpSeqBase(abc.ABC):
         self,
         n: int,
         generator: Callable,
-        constraints: Iterable[Constraint[Op]] = (),
+        # constraints: Iterable[Constraint[Op]] = (),
         prefix_constraints: Iterable[Constraint[Op]] = (),
-        lookback_constraints: Iterable[LookbackConstraint[Op]] = (),
+        # lookback_constraints: Iterable[LookbackConstraint[Op]] = (),
         # unique_key: Callable[[Op], Any] | None = None,
         prefix: Seq[Op] = (),
         # loop: bool = False,
@@ -40,6 +40,7 @@ class OpSeqBase(abc.ABC):
         # attributes
         self.n = n
         self.generator = generator
+        self.prefix_constraints = tuple(prefix_constraints)
         # self.curr_prev_constraint = curr_prev_constraint
         # self.candidate_constraint = candidate_constraint
         # self.i_constraints = i_constraints
@@ -55,6 +56,8 @@ class OpSeqBase(abc.ABC):
         return self._iter(self.prefix)
 
     def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:
+        if prefix and not all(constraint(prefix) for constraint in self.prefix_constraints):
+            return
         if len(prefix) == self.n:
             yield prefix
             return

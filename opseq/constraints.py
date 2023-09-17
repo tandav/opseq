@@ -18,17 +18,17 @@ def prefix_constraint(constraint: Constraint[Op]):
     return _constraint
 
 
-def constraint(constraint: Constraint[Op]):
-    return prefix_constraint(lambda seq
-    def _constraint(generator):
-        @functools.wraps(generator)
-        def constrainted_gen(*args, **kwargs):
-            for seq in generator(*args, **kwargs):
-                if not constraint(seq):
-                    continue
-                yield seq
-        return constrainted_gen
-    return _constraint
+# def constraint(constraint: Constraint[Op]):
+#     return prefix_constraint(lambda seq
+#     def _constraint(generator):
+#         @functools.wraps(generator)
+#         def constrainted_gen(*args, **kwargs):
+#             for seq in generator(*args, **kwargs):
+#                 if not constraint(seq):
+#                     continue
+#                 yield seq
+#         return constrainted_gen
+#     return _constraint
 
 
 def unique(key: UniqueKey[Op] | None = None):
