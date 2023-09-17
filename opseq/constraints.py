@@ -1,8 +1,6 @@
 import functools
 from opseq.types import Op
-from opseq.types import LookbackConstraint
 from opseq.types import Constraint
-from collections.abc import Callable
 
 
 def constraint(constraint: Constraint[Op]):
@@ -15,6 +13,10 @@ def constraint(constraint: Constraint[Op]):
                 yield seq
         return constrainted_gen
     return _constraint
+
+
+def unique(key: Constraint[Op]):
+    return constraint(lambda seq: len(seq) == len(set(map(key, seq))))
 
 
 def lookback_constraint(index: int, constraint: Constraint[Op]):
