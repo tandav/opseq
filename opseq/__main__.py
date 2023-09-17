@@ -22,18 +22,18 @@ class OpSeq:
         prefix: Seq[Op] = (),
         constraints: Iterable[Constraint[Op]] = (),
         prefix_constraints: Iterable[Constraint[Op]] = (),
+        parallel: bool = False,
     ):
         self.n = n
         self.generator = generator
+        self.prefix = prefix
         self.constraints = list(constraints)
         self.prefix_constraints = list(prefix_constraints)
-        self.seen_keys = set()
-        self.prefix = prefix
+        self.parallel = parallel
 
     def __iter__(self) -> Generator[Seq[Op], None, None]:
-        self.seen_keys.clear()
-        self.prefix_queue = multiprocessing.Queue()
-        self.prefix_queue.put(self.prefix)
+        # self.prefix_queue = multiprocessing.Queue()
+        # self.prefix_queue.put(self.prefix)
         return self._iter(self.prefix)
 
     def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:
@@ -42,8 +42,13 @@ class OpSeq:
             return
         if len(prefix) < self.n:
             seqs = self.generator(prefix)
-            # self.prefix_queue += seqs
-            yield from itertools.chain.from_iterable(self._iter(seq) for seq in seqs)
+            if self.parallel:
+                # self.prefix_queue += seqs
+                with ProcessPoolExecutor() as executor:
+                    for result in executor.map(self._iter, seqs):
+                        yield from result
+            else:
+                yield from itertools.chain.from_iterable(self._iter(seq) for seq in seqs)
             return
         if len(prefix) > self.n:
             raise exceptions.SeqLengthError
