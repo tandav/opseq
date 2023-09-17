@@ -5,29 +5,19 @@ from opseq import constraints
 
 
 
-# @pytest.mark.parametrize('constraint, expected', [
-#     (lambda seq: seq[0] != 0, [(1, 0), (1, 1)]),
-# ])
-# def test_prefix_constraint(generator1, constraint, expected):
-#     generator = constraints.prefix_constraint(constraint)(generator1)
-#     assert list(OpSeq(2, generator)) == expected
-
-
 @pytest.mark.parametrize('constraint, expected', [
     (lambda seq: seq[0] != 0, [(1, 0), (1, 1)]),
 ])
 def test_prefix_constraints(generator1, constraint, expected):
-    # generator = constraints.prefix_constraint(constraint)(generator1)
     assert list(OpSeq(2, generator1, prefix_constraints=[constraint])) == expected
 
 
-# @pytest.mark.parametrize('constraint, expected', [
-#     (lambda seq: seq != (0, 0), [(0, 1), (1, 0), (1, 1)]),
-#     # (lambda seq: sum(seq) == 1, [(0, 1), (1, 0)]),
-# ])
-# def test_constraint(generator1, constraint, expected):
-#     generator = constraints.constraint(constraint)(generator1)
-#     assert list(OpSeq(2, generator)) == expected
+@pytest.mark.parametrize('constraint, expected', [
+    (lambda seq: seq != (0, 0), [(0, 1), (1, 0), (1, 1)]),
+    (lambda seq: sum(seq) == 1, [(0, 1), (1, 0)]),
+])
+def test_constraint(generator1, constraint, expected):
+    assert list(OpSeq(2, generator1, constraints=[constraint])) == expected
 
 
 # @pytest.mark.parametrize('key, expected', [
