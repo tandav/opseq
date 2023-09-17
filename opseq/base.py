@@ -10,7 +10,8 @@ from functools import partial
 
 from opseq.types import Op
 from opseq.types import LookbackConstraint
-from opseq.types import CandidateConstraint
+from opseq.types import Seq
+from opseq.types import Constraint
 from opseq.types import IConstraint
 from opseq import util
 
@@ -20,12 +21,12 @@ class OpSeqBase(abc.ABC):
         self,
         n: int,
         generator: Callable,
+        constraint: Constraint[Op] | None = None,
         lookback_constraint: LookbackConstraint[Op] | None = None,
         # curr_prev_constraint: CurrPrevConstraint[Op] | None = None,
-        # candidate_constraint: CandidateConstraint[Op] | None = None,
         # i_constraints: IConstraint[Op] | None = None,
         # unique_key: Callable[[Op], Any] | None = None,
-        prefix: tuple[Op, ...] = (),
+        prefix: Seq[Op] = (),
         # loop: bool = False,
     ):
         # arg validation
@@ -48,13 +49,13 @@ class OpSeqBase(abc.ABC):
         # self.loop = loop
 
     # @abc.abstractmethod
-    # def generate_options(self, seq: tuple[Op, ...]) -> Generator[Op, None, None]:
+    # def generate_options(self, seq: Seq[Op]) -> Generator[Op, None, None]:
     #     ...
 
-    def __iter__(self) -> Generator[tuple[Op, ...], None, None]:
+    def __iter__(self) -> Generator[Seq[Op], None, None]:
         return self._iter(self.prefix)
 
-    def _iter(self, prefix: tuple[Op, ...] = ()) -> Generator[tuple[Op, ...], None, None]:
+    def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:
         if len(prefix) == self.n:
             yield prefix
             return
@@ -77,8 +78,8 @@ class OpSeqBase(abc.ABC):
     #     it = itertools.chain.from_iterable(it)
     #     yield from it
 
-    # def _generate_candidates(self, op: Op, seq: tuple[Op, ...]) -> Iterable[tuple[Op, ...]]:
-    #     def inner() -> Iterable[tuple[Op, ...]]:
+    # def _generate_candidates(self, op: Op, seq: Seq[Op]) -> Iterable[Seq[Op]]:
+    #     def inner() -> Iterable[Seq[Op]]:
     #         candidate = (*seq, op)
     #         if len(candidate) < self.n:
     #             yield from self._iter(prefix=candidate)
