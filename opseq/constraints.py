@@ -1,3 +1,4 @@
+from __future__ import annotations
 # import functools
 from collections.abc import Iterable
 import typing as tp
@@ -39,3 +40,16 @@ class UniqueSeq:
             return False
         self.seen_keys.add(k)
         return True
+
+
+class LenConstraint:
+    def __init__(self, length: int, constraint: tp.Callable[[Seq[Op]], bool]):
+        self.length = length
+        self.constraint = constraint
+
+    @classmethod
+    def from_dict(cls, d: dict[int, tp.Callable[[Seq[Op]], bool]]) -> list[LenConstraint]:
+        return [cls(length, constraint) for length, constraint in d.items()]
+
+    def __call__(self, seq: Seq[Op]) -> bool:
+        return len(seq) == self.length and self.constraint(seq)

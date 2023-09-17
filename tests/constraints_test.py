@@ -1,6 +1,7 @@
 import pytest
 from opseq import OpSeq
 from opseq.generators import AppendOp
+from opseq import constraints as constraints_
 
 
 @pytest.mark.parametrize('constraint, expected', [
@@ -46,4 +47,11 @@ def test_unique_key_op(generator, key, expected):
 def test_lookback_constraint(generator1, constraints, expected):
     assert list(OpSeq(2, generator1, lookback_constraints=constraints)) == expected
 
+def is_even(x: int) -> bool:
+    return x % 2 == 0
+
+
+def test_len_constraint():
+    opseq = OpSeq(4, generator=AppendOp([0, 1, 2]), constraints=constraints_.LenConstraint.from_dict({0: is_even}))
+    assert all(is_even(seq[0]) for seq in opseq)
 

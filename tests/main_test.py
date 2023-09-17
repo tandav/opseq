@@ -37,8 +37,6 @@ def test_seq_length_error(n, generator, expected):
 
 
 
-# def is_even(x: int) -> bool:
-#     return x % 2 == 0
 
 
 # def identity(x):
@@ -74,9 +72,6 @@ def test_seq_length_error(n, generator, expected):
 #     return 0, 1, 2, 3
 
 
-
-# def test_first_constraint():
-#     assert all(is_even(seq[0]) for seq in OpSeq(4, options=(0, 1, 2), i_constraints={0: is_even}))  # type: ignore[var-annotated]
 
 
 
