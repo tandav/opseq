@@ -31,7 +31,6 @@ def test_seq_length_error(n, generator, expected):
 
 # from __future__ import annotations
 
-# import itertools
 # from collections import Counter
 
 
@@ -42,9 +41,6 @@ def test_seq_length_error(n, generator, expected):
 
 
 
-
-# def even_odd_interchange(prev, curr):
-#     return is_even(prev) ^ is_even(curr)
 
 
 # def is_candidate_constraint(candidate: tuple[str, ...]) -> bool:
@@ -62,14 +58,6 @@ def test_seq_length_error(n, generator, expected):
 # @pytest.fixture
 # def options() -> tuple[int, ...]:
 #     return 0, 1, 2, 3
-
-
-
-# def test_prev_curr(options):
-#     for cycle in OpSeq(5, options=options, curr_prev_constraint={-1: even_odd_interchange}, loop=True):  # type: ignore[var-annotated]
-#         assert even_odd_interchange(cycle[-1], cycle[0])
-#         for prev, curr in itertools.pairwise(cycle):
-#             assert even_odd_interchange(prev, curr)
 
 
 

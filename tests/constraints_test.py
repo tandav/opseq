@@ -1,3 +1,5 @@
+import itertools
+
 import pytest
 from opseq import OpSeq
 from opseq.generators import AppendOp
@@ -12,6 +14,10 @@ def is_different_startswith(a: str, b: str) -> bool:
 
 def is_equal_endswith(a: str, b: str) -> bool:
     return a[1] == b[1]
+
+
+def even_odd_interchange(prev, curr):
+    return is_even(prev) ^ is_even(curr)
 
 
 @pytest.mark.parametrize('constraint, expected', [
@@ -106,6 +112,18 @@ def test_lookback_constraint_loop2():
         is_different_startswith(seq[0], seq[-1]) and is_equal_endswith(seq[1], seq[-1])
         for seq in opseq
     )
+
+
+def test_lookback_constraint_loop3():
+    for seq in OpSeq(
+        5, 
+        AppendOp(range(4)),
+        constraints=constraints_.Lookback.from_dict({-1: even_odd_interchange}, loop=True),
+        prefix_constraints=constraints_.Lookback.from_dict({-1: even_odd_interchange}),
+    ):
+        assert even_odd_interchange(seq[-1], seq[0])
+        for prev, curr in itertools.pairwise(seq):
+            assert even_odd_interchange(prev, curr)
 
 
 def is_even(x: int) -> bool:
