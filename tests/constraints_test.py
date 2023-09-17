@@ -1,7 +1,7 @@
 import pytest
 from opseq import OpSeq
 from tests.conftest import _generator1
-from tests.conftest import _generator2
+from tests.conftest import Generator
 
 
 @pytest.mark.parametrize('constraint, expected', [
@@ -31,8 +31,10 @@ def test_unique_key_seq(generator1, key, expected):
 
 
 @pytest.mark.parametrize('generator, key, expected', [
-    # (_generator1, lambda op: op, [(0, 1), (1, 0)]),
-    (_generator2, str.lower, [('a', 'b'), ('b', 'a')]),
+    (Generator([0, 1]), lambda op: op, [(0, 1), (1, 0)]),
+    (Generator(['a', 'b']), str.lower, [('a', 'b'), ('b', 'a')]),
+    (Generator(['a', 'A', 'b']), str.lower, [('a', 'b'), ('A', 'b'), ('b', 'a'), ('b', 'A')]),
+    (Generator(['a', 'A']), str.lower, []),
 ])
 def test_unique_key_op(generator, key, expected):
     assert list(OpSeq(2, generator, unique_key_op=key)) == expected

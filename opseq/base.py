@@ -67,8 +67,8 @@ class OpSeqBase:
         return self._iter(self.prefix)
 
     def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:
-        # for constraint in self.prefix_constraints:
-            # print(prefix, constraint(prefix))
+        for constraint in self.prefix_constraints:
+            print(prefix, constraint(prefix))
         prefix = tuple(prefix)
         if prefix and not all(constraint(prefix) for constraint in self.prefix_constraints):
             return
