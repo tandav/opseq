@@ -40,19 +40,6 @@ class UniqueOp:
         return len(seq) == len(set(map(self.key, seq)))
 
 
-class UniqueSeq:
-    def __init__(self, key, seen_keys):
-        self.key = key
-        self.seen_keys = seen_keys
-
-    def __call__(self, seq: Seq[Op]) -> bool:
-        k = self.key(seq)
-        if k in self.seen_keys:
-            return False
-        self.seen_keys.add(k)
-        return True
-
-
 class LenConstraint:
     def __init__(self, length: int, constraint: tp.Callable[[Seq[Op]], bool]):
         self.length = length

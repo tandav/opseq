@@ -27,7 +27,6 @@ class OpSeq:
         constraints: Iterable[Constraint[Op]] = (),
         prefix_constraints: Iterable[Constraint[Op]] = (),
         unique_key_op: UniqueKeyOp[Op] | None = None,
-        unique_key_seq: UniqueKeySeq[Op] | None = None,
     ):
         self.n = n
         self.generator = generator
@@ -38,9 +37,6 @@ class OpSeq:
 
         if unique_key_op is not None:
             self.prefix_constraints.append(constraints_.UniqueOp(unique_key_op))
-
-        if unique_key_seq is not None:
-            self.constraints.append(constraints_.UniqueSeq(unique_key_seq, self.seen_keys))
 
     def __iter__(self) -> Generator[Seq[Op], None, None]:
         self.seen_keys.clear()
