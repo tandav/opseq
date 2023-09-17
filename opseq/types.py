@@ -3,6 +3,7 @@ from collections.abc import Callable
 from collections.abc import Generator
 from collections.abc import Sequence
 from collections.abc import Iterable
+from collections.abc import Hashable
 
 Op = TypeVar('Op')
 Seq = tuple[Op, ...]
@@ -14,3 +15,4 @@ Constraint = Callable[[Seq[Op]], bool]
 LookbackConstraint = dict[int, Callable[[Op, Op], bool]]
 IConstraint = dict[int, Callable[[Op], bool]]
 GeneratorCallable = Callable[[Seq[Op]], Generator[Op, None, None]]
+UniqueKey = Callable[[Seq[Op]], Hashable]

@@ -4,23 +4,33 @@ from opseq import OpSeq
 from opseq import constraints
 
 
-def test_simple(generator1):
-    assert list(OpSeq(2, generator1)) == [(0, 0), (0, 1), (1, 0), (1, 1)]
-
 
 @pytest.mark.parametrize('constraint_, expected', [
-    (lambda seq: seq != (0, 0), [(0, 1), (1, 0), (1, 1)]),
+    (lambda seq: seq[0] != 0, [(1, 0), (1, 1)]),
 ])
-def test_constraint(generator1, constraint_, expected):
-    generator = constraints.constraint(constraint_)(generator1)
+def test_prefix_constraint(generator1, constraint_, expected):
+    generator = constraints.prefix_constraint(constraint_)(generator1)
     assert list(OpSeq(2, generator)) == expected
+
 
 
 # @pytest.mark.parametrize('constraint_, expected', [
 #     (lambda seq: seq != (0, 0), [(0, 1), (1, 0), (1, 1)]),
+#     # (lambda seq: sum(seq) == 1, [(0, 1), (1, 0)]),
 # ])
-# def test_unique():
-#     assert list(OpSeq(2, generator1, unique_key=lambda op: op)) == [(0, 1), (1, 0)]
+# def test_constraint(generator1, constraint_, expected):
+#     generator = constraints.constraint(constraint_)(generator1)
+#     assert list(OpSeq(2, generator)) == expected
+
+
+# @pytest.mark.parametrize('key, expected', [
+#     # (None, [(0, 0), (0, 1), (1, 1)]),
+#     (sum, [(0, 0), (0, 1), (1, 1)]),
+#     # (lambda seq: seq != (0, 0), [(0, 1), (1, 0), (1, 1)]),
+# ])
+# def test_unique(generator1, key, expected):
+#     generator = constraints.unique(key)(generator1)
+#     assert list(OpSeq(2, generator)) == expected
 
 
 @pytest.mark.parametrize('index, constraint_, expected', [

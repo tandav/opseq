@@ -1,9 +1,25 @@
 import functools
 from opseq.types import Op
 from opseq.types import Constraint
+from opseq.types import UniqueKey
+
+
+
+def prefix_constraint(constraint: Constraint[Op]):
+    def _constraint(generator):
+        @functools.wraps(generator)
+        def constrainted_gen(*args, **kwargs):
+            for seq in generator(*args, **kwargs):
+                print(seq, constraint(seq))
+                if not constraint(seq):
+                    continue
+                yield seq
+        return constrainted_gen
+    return _constraint
 
 
 def constraint(constraint: Constraint[Op]):
+    return prefix_constraint(lambda seq
     def _constraint(generator):
         @functools.wraps(generator)
         def constrainted_gen(*args, **kwargs):
@@ -15,8 +31,10 @@ def constraint(constraint: Constraint[Op]):
     return _constraint
 
 
-def unique(key: Constraint[Op]):
-    return constraint(lambda seq: len(seq) == len(set(map(key, seq))))
+def unique(key: UniqueKey[Op] | None = None):
+    if key is None:
+        return prefix_constraint(lambda seq: len(seq) == len(set(seq)))
+    return prefix_constraint(lambda seq: len(seq) == len(set(map(key, seq))))
 
 
 def lookback_constraint(index: int, constraint: Constraint[Op]):
