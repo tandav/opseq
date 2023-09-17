@@ -22,7 +22,7 @@ def test_constraint(generator1, constraint, expected):
 @pytest.mark.parametrize('key, expected', [
     (sum, [(0, 0), (0, 1), (1, 1)]),
     (frozenset, [(0, 0), (0, 1), (1, 1)]),
-    (None, [(0, 0), (0, 1), (1, 0), (1, 1)]),
+    (lambda seq: seq, [(0, 0), (0, 1), (1, 0), (1, 1)]),
 ])
 def test_unique_key_seq(generator1, key, expected):
     opseq = OpSeq(2, generator1, unique_key_seq=key)
@@ -31,8 +31,8 @@ def test_unique_key_seq(generator1, key, expected):
 
 
 @pytest.mark.parametrize('generator, key, expected', [
-    (_generator1, None, [(0, 1), (1, 0)]),
-    # (_generator3, str.lower, [('a', 'b'), ('b', 'a')]),
+    # (_generator1, lambda op: op, [(0, 1), (1, 0)]),
+    (_generator2, str.lower, [('a', 'b'), ('b', 'a')]),
 ])
 def test_unique_key_op(generator, key, expected):
     assert list(OpSeq(2, generator, unique_key_op=key)) == expected

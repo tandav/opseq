@@ -1,7 +1,11 @@
 # import functools
+from collections.abc import Iterable
 import typing as tp
 from opseq.types import Seq
 from opseq.types import Op
+from opseq.exceptions import SeqLengthError
+from collections.abc import Generator
+
 # from opseq.types import Constraint
 # from opseq.types import UniqueKey
 
@@ -58,15 +62,29 @@ from opseq.types import Op
 #     return _lookback_constraint
 
 
-def unique_seq(
-    seq: Seq[Op],
-    key,
-    seen_keys: set[tp.Any] | None = None,
-) -> bool:
-    if seen_keys is None:
-        seen_keys = set()
-    k = key(seq)
-    if k in seen_keys:
-        return False
-    seen_keys.add(k)
-    return True
+class UniqueOp:
+    def __init__(self, key):
+        self.key = key
+
+    def __call__(self, seq: Seq[Op]) -> bool:
+        return len(seq) == len(set(map(self.key, seq)))
+
+
+class UniqueSeq:
+    def __init__(self, key, seen_keys):
+        self.key = key
+        self.seen_keys = seen_keys
+
+    def __call__(self, seq: Seq[Op]) -> bool:
+        k = self.key(seq)
+        if k in self.seen_keys:
+            return False
+        self.seen_keys.add(k)
+        return True
+
+
+def seq_length(seqs: Iterable[Seq[Op]], length: int) -> Generator[Seq[Op], None, None]:
+    for seq in seqs:
+        if len(seq) != length:
+            raise SeqLengthError
+        yield seq

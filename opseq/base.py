@@ -1,4 +1,3 @@
-import abc
 import itertools
 from collections.abc import Iterable
 from collections.abc import Generator
@@ -8,16 +7,17 @@ from concurrent.futures import ProcessPoolExecutor
 import tqdm
 from functools import partial
 
+from opseq import exceptions
 from opseq.types import Op
 from opseq.types import LookbackConstraint
 from opseq.types import Seq
 from opseq.types import Constraint
 from opseq.types import UniqueKeyOp
 from opseq.types import UniqueKeySeq
-from opseq.constraints import unique_seq
+from opseq import constraints as constraints_
 
 
-class OpSeqBase(abc.ABC):
+class OpSeqBase:
     def __init__(
         self,
         n: int,
@@ -48,11 +48,14 @@ class OpSeqBase(abc.ABC):
         # self.curr_prev_constraint = curr_prev_constraint
         # self.candidate_constraint = candidate_constraint
         # self.i_constraints = i_constraints
-        self.unique_key_op = unique_key_op
+        # self.unique_key_op = unique_key_op
         self.seen_keys = set()
 
+        if unique_key_op is not None:
+            self.prefix_constraints.append(constraints_.UniqueOp(unique_key_op))
+
         if unique_key_seq is not None:
-            self.constraints.append(partial(unique_seq, key=unique_key_seq, seen_keys=self.seen_keys))
+            self.constraints.append(constraints_.UniqueSeq(unique_key_seq, self.seen_keys))
 
         self.prefix = prefix
         # self.loop = loop
@@ -64,18 +67,18 @@ class OpSeqBase(abc.ABC):
         return self._iter(self.prefix)
 
     def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:
+        # for constraint in self.prefix_constraints:
+            # print(prefix, constraint(prefix))
+        prefix = tuple(prefix)
         if prefix and not all(constraint(prefix) for constraint in self.prefix_constraints):
             return
         if len(prefix) < self.n:
-            yield from itertools.chain.from_iterable(self._iter(seq) for seq in self.generator(prefix))
+            seqs = self.generator(prefix)
+            seqs = constraints_.seq_length(seqs, len(prefix) + 1)
+            yield from itertools.chain.from_iterable(self._iter(seq) for seq in seqs)
             return
         if not all(constraint(prefix) for constraint in self.constraints):
             return
-        # if self.unique_key_seq is not None:
-        #     key = self.unique_key_seq(prefix)
-        #     if key in self.seen_keys:
-        #         return
-        #     self.seen_keys.add(key)
         yield prefix
 
 

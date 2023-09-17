@@ -8,6 +8,7 @@ def _generator(seq, options):
 
 _generator1 = partial(_generator, options=[0, 1])
 _generator2 = partial(_generator, options=['a', 'A', 'b'])
+# _generator2 = partial(_generator, options=['a', 'A'])
 
 @pytest.fixture
 def generator1():
