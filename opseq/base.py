@@ -7,7 +7,6 @@ from typing import Any
 from concurrent.futures import ProcessPoolExecutor
 import tqdm
 from functools import partial
-from functools import partialmethod
 
 from opseq.types import Op
 from opseq.types import LookbackConstraint
@@ -15,7 +14,7 @@ from opseq.types import Seq
 from opseq.types import Constraint
 from opseq.types import UniqueKeyOp
 from opseq.types import UniqueKeySeq
-from opseq import constraints
+from opseq.constraints import unique_seq
 
 
 class OpSeqBase(abc.ABC):
@@ -50,37 +49,18 @@ class OpSeqBase(abc.ABC):
         # self.candidate_constraint = candidate_constraint
         # self.i_constraints = i_constraints
         self.unique_key_op = unique_key_op
-        self.unique_key_seq = unique_key_seq
+        self.seen_keys = set()
 
         if unique_key_seq is not None:
-            # self.constraints.append(self.unique_seq_constraint)
-            # self.constraints.append(partialmethod(self.unique_seq_constraint, key=unique_key_seq))
-            self.constraints.append(partial(self.unique_seq_constraint, key=unique_key_seq))
+            self.constraints.append(partial(unique_seq, key=unique_key_seq, seen_keys=self.seen_keys))
 
-        self.seen_keys = set()
         self.prefix = prefix
         # self.loop = loop
 
-    # def unique_seq_constraint(self, seq: Seq[Op]) -> bool:
-    #     if self.unique_key_seq is None:
-    #         return True
-    #     key = self.unique_key_seq(seq)
-    #     if key in self.seen_keys:
-    #         return False
-    #     self.seen_keys.add(key)
-    #     return True
-    
-    def unique_seq_constraint(self, seq: Seq[Op], key) -> bool:
-        # if self.unique_key_seq is None:
-            # return True
-        k = key(seq)
-        if k in self.seen_keys:
-            return False
-        self.seen_keys.add(k)
-        return True
+
 
     def __iter__(self) -> Generator[Seq[Op], None, None]:
-        self.seen_keys = set()
+        self.seen_keys.clear()
         return self._iter(self.prefix)
 
     def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:

@@ -1,5 +1,7 @@
 # import functools
-# from opseq.types import Op
+import typing as tp
+from opseq.types import Seq
+from opseq.types import Op
 # from opseq.types import Constraint
 # from opseq.types import UniqueKey
 
@@ -54,3 +56,17 @@
 #                 yield seq
 #         return constrainted_gen
 #     return _lookback_constraint
+
+
+def unique_seq(
+    seq: Seq[Op],
+    key,
+    seen_keys: set[tp.Any] | None = None,
+) -> bool:
+    if seen_keys is None:
+        seen_keys = set()
+    k = key(seq)
+    if k in seen_keys:
+        return False
+    seen_keys.add(k)
+    return True
