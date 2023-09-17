@@ -39,8 +39,7 @@ def test_seq_length_error(n, generator, expected):
 
 
 
-# def identity(x):
-#     return x
+
 
 
 # def is_different_startswith(a: str, b: str) -> bool:
@@ -99,11 +98,6 @@ def test_seq_length_error(n, generator, expected):
 #     prefix = options[:3]
 #     assert all(seq[:len(prefix)] == prefix for seq in OpSeq(5, options=options, prefix=prefix, parallel=parallel))  # type: ignore[var-annotated]
 
-
-# @pytest.mark.parametrize('parallel', [False, True])
-# def test_unique(options, parallel):
-#     assert all(len(seq) == len(set(seq)) for seq in OpSeq(4, options=options, unique_key=identity, parallel=parallel))  # type: ignore[var-annotated]
-#     assert any(len(seq) != len(set(seq)) for seq in OpSeq(4, options=options, parallel=parallel))  # type: ignore[var-annotated]
 
 
 # @pytest.mark.parametrize('parallel', [False, True])

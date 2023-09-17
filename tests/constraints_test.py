@@ -3,6 +3,8 @@ from opseq import OpSeq
 from opseq.generators import AppendOp
 from opseq import constraints as constraints_
 
+def identity(x):
+    return x
 
 @pytest.mark.parametrize('constraint, expected', [
     (lambda seq: seq[0] != 0, [(1, 0), (1, 1)]),
@@ -31,13 +33,19 @@ def test_unique_key_seq(generator1, key, expected):
 
 
 @pytest.mark.parametrize('generator, key, expected', [
-    (AppendOp([0, 1]), lambda op: op, [(0, 1), (1, 0)]),
+    (AppendOp([0, 1]), identity, [(0, 1), (1, 0)]),
     (AppendOp(['a', 'b']), str.lower, [('a', 'b'), ('b', 'a')]),
     (AppendOp(['a', 'A', 'b']), str.lower, [('a', 'b'), ('A', 'b'), ('b', 'a'), ('b', 'A')]),
     (AppendOp(['a', 'A']), str.lower, []),
+    (AppendOp([['a'], ['A'], ['b']]), lambda op: op[0].lower(), [(['a'], ['b']), (['A'], ['b']), (['b'], ['a']), (['b'], ['A'])]),
 ])
 def test_unique_key_op(generator, key, expected):
-    assert list(OpSeq(2, generator, unique_key_op=key)) == expected
+    results = list(OpSeq(2, generator, unique_key_op=key))
+    results_no_unique = list(OpSeq(2, generator))
+    assert results == expected
+    assert all(len(seq) == len(set(map(key, seq))) for seq in results)
+    assert any(len(seq) != len(set(map(key, seq))) for seq in results_no_unique)
+
 
 
 @pytest.mark.parametrize('constraints, expected', [
