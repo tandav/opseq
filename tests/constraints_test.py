@@ -1,10 +1,7 @@
 import pytest
-import itertools
 from opseq import OpSeq
 from tests.conftest import _generator1
 from tests.conftest import _generator2
-# from opseq import constraints
-
 
 
 @pytest.mark.parametrize('constraint, expected', [
@@ -28,7 +25,17 @@ def test_constraint(generator1, constraint, expected):
     (None, [(0, 0), (0, 1), (1, 0), (1, 1)]),
 ])
 def test_unique_key_seq(generator1, key, expected):
-    assert list(OpSeq(2, generator1, unique_key_seq=key)) == expected
+    opseq = OpSeq(2, generator1, unique_key_seq=key)
+    assert list(opseq) == expected
+    assert list(opseq) == expected  # test multiple iterations give same result
+
+
+@pytest.mark.parametrize('generator, key, expected', [
+    (_generator1, None, [(0, 1), (1, 0)]),
+    # (_generator3, str.lower, [('a', 'b'), ('b', 'a')]),
+])
+def test_unique_key_op(generator, key, expected):
+    assert list(OpSeq(2, generator, unique_key_op=key)) == expected
 
 
 # @pytest.mark.parametrize('index, constraint, expected', [

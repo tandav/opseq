@@ -12,6 +12,7 @@ from opseq.types import Op
 from opseq.types import LookbackConstraint
 from opseq.types import Seq
 from opseq.types import Constraint
+from opseq.types import UniqueKeyOp
 from opseq.types import UniqueKeySeq
 from opseq import constraints
 
@@ -25,6 +26,7 @@ class OpSeqBase(abc.ABC):
         prefix_constraints: Iterable[Constraint[Op]] = (),
         # lookback_constraints: Iterable[LookbackConstraint[Op]] = (),
         # unique_key: Callable[[Op], Any] | None = None,
+        unique_key_op: UniqueKeyOp[Op] | None = None,
         unique_key_seq: UniqueKeySeq[Op] | None = None,
         prefix: Seq[Op] = (),
         # loop: bool = False,
@@ -46,6 +48,7 @@ class OpSeqBase(abc.ABC):
         # self.curr_prev_constraint = curr_prev_constraint
         # self.candidate_constraint = candidate_constraint
         # self.i_constraints = i_constraints
+        self.unique_key_op = unique_key_op
         self.unique_key_seq = unique_key_seq
         self.seen_keys = set()
         self.prefix = prefix
