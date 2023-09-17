@@ -12,8 +12,9 @@ generator1 = partial(generator0, options=[0, 1])
 
 
 # @lookback_constraint(constraints={-1: lambda prev, curr: prev != curr})
-# def generator2(seq):
-#     yield from generator1(seq)
+@lookback_constraint(-1, lambda prev, curr: prev != curr)
+def generator2(seq):
+    yield from generator1(seq)
     # ops = [0, 1, 2, 3]
     # for op in ops:
     #     yield seq + (op,)
@@ -24,4 +25,5 @@ def test_simple():
 
 
 def test_lookback_constraint():
-    assert list(OpSeq(2, generator1, lookback_constraint={-1: lambda prev, curr: prev != curr})) == [(0, 1), (1, 0)]
+    # assert list(OpSeq(2, generator1, lookback_constraint={-1: lambda prev, curr: prev != curr})) == [(0, 1), (1, 0)]
+    assert list(OpSeq(2, generator2)) == [(0, 1), (1, 0)]

@@ -22,7 +22,7 @@ class OpSeqBase(abc.ABC):
         n: int,
         generator: Callable,
         constraint: Constraint[Op] | None = None,
-        lookback_constraint: LookbackConstraint[Op] | None = None,
+        # lookback_constraint: LookbackConstraint[Op] | None = None,
         # curr_prev_constraint: CurrPrevConstraint[Op] | None = None,
         # i_constraints: IConstraint[Op] | None = None,
         # unique_key: Callable[[Op], Any] | None = None,
@@ -30,8 +30,8 @@ class OpSeqBase(abc.ABC):
         # loop: bool = False,
     ):
         # arg validation
-        if lookback_constraint is not None:
-            generator = util.lookback_constraint(lookback_constraint)(generator)
+        # if lookback_constraint is not None:
+            # generator = util.lookback_constraint(lookback_constraint)(generator)
         # if curr_prev_constraint is not None:
         #     if any(k >= 0 for k in curr_prev_constraint):
         #         raise KeyError('curr_prev_constraint keys must be negative')
