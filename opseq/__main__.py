@@ -10,12 +10,8 @@ from functools import partial
 
 from opseq import exceptions
 from opseq.types import Op
-from opseq.types import LookbackConstraint
 from opseq.types import Seq
 from opseq.types import Constraint
-from opseq.types import UniqueKeyOp
-from opseq.types import UniqueKeySeq
-from opseq import constraints as constraints_
 
 
 class OpSeq:

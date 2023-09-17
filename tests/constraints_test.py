@@ -5,6 +5,10 @@ from opseq import OpSeq
 from opseq.generators import AppendOp
 from opseq import constraints as constraints_
 
+
+def is_even(x: int) -> bool:
+    return x % 2 == 0
+
 def identity(x):
     return x
 
@@ -124,10 +128,6 @@ def test_lookback_constraint_loop3():
         assert even_odd_interchange(seq[-1], seq[0])
         for prev, curr in itertools.pairwise(seq):
             assert even_odd_interchange(prev, curr)
-
-
-def is_even(x: int) -> bool:
-    return x % 2 == 0
 
 
 def test_len_constraint():
