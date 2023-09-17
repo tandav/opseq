@@ -7,6 +7,10 @@ def test_simple(generator1):
     assert list(OpSeq(2, generator1)) == [(0, 0), (0, 1), (1, 0), (1, 1)]
 
 
+def test_length(generator1):
+    assert all(len(seq) == 2 for seq in OpSeq(2, generator1))
+
+
 def gen1(seq):
     yield seq + (0, 1)
 
@@ -30,9 +34,7 @@ def test_seq_length_error(n, generator, expected):
 # import itertools
 # from collections import Counter
 
-# import pytest
 
-# from opseq import OpSeq
 
 
 # def is_even(x: int) -> bool:
@@ -72,17 +74,10 @@ def test_seq_length_error(n, generator, expected):
 #     return 0, 1, 2, 3
 
 
-# def test_length():
-#     assert all(len(seq) == 4 for seq in OpSeq(4, options=(0, 1, 2), i_constraints={0: is_even}))  # type: ignore[var-annotated]
-
 
 # def test_first_constraint():
 #     assert all(is_even(seq[0]) for seq in OpSeq(4, options=(0, 1, 2), i_constraints={0: is_even}))  # type: ignore[var-annotated]
 
-
-# def test_input_validation():
-#     with pytest.raises(ValueError):
-#         tuple(OpSeq(5, options=(1, 1, 2)))
 
 
 # def test_prev_curr(options):
