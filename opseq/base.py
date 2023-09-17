@@ -7,6 +7,7 @@ from typing import Any
 from concurrent.futures import ProcessPoolExecutor
 import tqdm
 from functools import partial
+from functools import partialmethod
 
 from opseq.types import Op
 from opseq.types import LookbackConstraint
@@ -43,17 +44,40 @@ class OpSeqBase(abc.ABC):
         # attributes
         self.n = n
         self.generator = generator
-        self.constraints = tuple(constraints)
-        self.prefix_constraints = tuple(prefix_constraints)
+        self.constraints = list(constraints)
+        self.prefix_constraints = list(prefix_constraints)
         # self.curr_prev_constraint = curr_prev_constraint
         # self.candidate_constraint = candidate_constraint
         # self.i_constraints = i_constraints
         self.unique_key_op = unique_key_op
         self.unique_key_seq = unique_key_seq
+
+        if unique_key_seq is not None:
+            # self.constraints.append(self.unique_seq_constraint)
+            # self.constraints.append(partialmethod(self.unique_seq_constraint, key=unique_key_seq))
+            self.constraints.append(partial(self.unique_seq_constraint, key=unique_key_seq))
+
         self.seen_keys = set()
         self.prefix = prefix
         # self.loop = loop
 
+    # def unique_seq_constraint(self, seq: Seq[Op]) -> bool:
+    #     if self.unique_key_seq is None:
+    #         return True
+    #     key = self.unique_key_seq(seq)
+    #     if key in self.seen_keys:
+    #         return False
+    #     self.seen_keys.add(key)
+    #     return True
+    
+    def unique_seq_constraint(self, seq: Seq[Op], key) -> bool:
+        # if self.unique_key_seq is None:
+            # return True
+        k = key(seq)
+        if k in self.seen_keys:
+            return False
+        self.seen_keys.add(k)
+        return True
 
     def __iter__(self) -> Generator[Seq[Op], None, None]:
         self.seen_keys = set()
@@ -67,11 +91,11 @@ class OpSeqBase(abc.ABC):
             return
         if not all(constraint(prefix) for constraint in self.constraints):
             return
-        if self.unique_key_seq is not None:
-            key = self.unique_key_seq(prefix)
-            if key in self.seen_keys:
-                return
-            self.seen_keys.add(key)
+        # if self.unique_key_seq is not None:
+        #     key = self.unique_key_seq(prefix)
+        #     if key in self.seen_keys:
+        #         return
+        #     self.seen_keys.add(key)
         yield prefix
 
 
