@@ -2,13 +2,17 @@ import pytest
 from opseq.exceptions import SeqLengthError
 from opseq import OpSeq
 
+
 def test_simple(generator1):
     assert list(OpSeq(2, generator1)) == [(0, 0), (0, 1), (1, 0), (1, 1)]
+
+def bad_generator(seq):
+    yield seq + (0, 1)
 
 
 def test_seq_length_error(generator1):
     with pytest.raises(SeqLengthError):
-        list(OpSeq(3, generator1))
+        list(OpSeq(3, bad_generator))
 
 # from __future__ import annotations
 

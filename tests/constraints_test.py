@@ -1,6 +1,5 @@
 import pytest
 from opseq import OpSeq
-from tests.conftest import _generator1
 from tests.conftest import Generator
 
 
