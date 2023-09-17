@@ -26,9 +26,7 @@ def lookback_constraint(constraints: LookbackConstraint[Op]):
             for seq in generator(*args, **kwargs):
                 _constraints = {k: f for k, f in constraints.items() if abs(k) < len(seq)}
                 for k, f in _constraints.items():
-                    if not f(seq[k - 1], seq[-1]):
-                        break
-                else:
-                    yield seq
+                    if f(seq[k - 1], seq[-1]):
+                        yield seq
         return constrainted_gen
     return _lookback_constraint
