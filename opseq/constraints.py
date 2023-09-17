@@ -8,21 +8,27 @@ from collections.abc import Generator
 
 
 class Lookback:
-    def __init__(self, index, constraint):
+    def __init__(self, index, constraint, loop: bool = False):
         if index >= 0:
             raise KeyError('constraint index must be negative')
         self.index = index
         self.constraint = constraint
+        self.loop = loop
 
     @classmethod
-    def from_dict(cls, d: dict[int, tp.Callable[[Op, Op], bool]]) -> list[Lookback]:
-        return [cls(index, constraint) for index, constraint in d.items()]
+    def from_dict(cls, d: dict[int, tp.Callable[[Op, Op], bool]], loop: bool = False) -> list[Lookback]:
+        return [cls(index, constraint, loop) for index, constraint in d.items()]
 
     def __call__(self, seq: Seq[Op]) -> bool:
         if len(seq) == 1:
             return True
         if abs(self.index) >= len(seq):
             return True
+        if self.loop:
+            return all(
+                self.constraint(seq[(i + self.index) % len(seq)], seq[i])
+                for i in range(abs(self.index))
+            )
         return self.constraint(seq[self.index - 1], seq[-1])
 
 

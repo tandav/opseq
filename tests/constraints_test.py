@@ -6,6 +6,14 @@ from opseq import constraints as constraints_
 def identity(x):
     return x
 
+def is_different_startswith(a: str, b: str) -> bool:
+    return a[0] != b[0]
+
+
+def is_equal_endswith(a: str, b: str) -> bool:
+    return a[1] == b[1]
+
+
 @pytest.mark.parametrize('constraint, expected', [
     (lambda seq: seq[0] != 0, [(1, 0), (1, 1)]),
 ])
@@ -80,6 +88,36 @@ def test_unique_key_op(generator, key, expected):
 ])
 def test_lookback_constraint(opseq, expected):
     assert list(opseq) == expected
+
+
+@pytest.mark.parametrize('opseq, expected', [
+    (
+        OpSeq(
+            3, 
+            AppendOp(options=[0, 1, 2]), 
+            prefix_constraints=constraints_.Lookback.from_dict({
+                -1: lambda prev, curr: prev != curr,
+                -2: lambda prev, curr: prev != curr,
+            },loop=True)
+        ),
+        [(0, 1, 2), (0, 2, 1), (1, 0, 2), (1, 2, 0), (2, 0, 1), (2, 1, 0)],
+    ),
+])
+def test_lookback_constraint_loop1(opseq, expected):
+    assert list(opseq) == expected
+
+
+def test_lookback_constraint_loop2():
+    opseq = OpSeq(
+        4,
+        AppendOp(options=('A0', 'A1', 'C0', 'D0', 'D1')),
+        constraints=constraints_.Lookback.from_dict({-1: is_different_startswith, -2: is_equal_endswith}, loop=True),
+    )
+    assert all(
+        is_different_startswith(seq[0], seq[-1]) and is_equal_endswith(seq[1], seq[-1])
+        for seq in opseq
+    )
+
 
 def is_even(x: int) -> bool:
     return x % 2 == 0

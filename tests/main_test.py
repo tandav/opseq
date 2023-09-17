@@ -42,13 +42,6 @@ def test_seq_length_error(n, generator, expected):
 
 
 
-# def is_different_startswith(a: str, b: str) -> bool:
-#     return a[0] != b[0]
-
-
-# def is_equal_endswith(a: str, b: str) -> bool:
-#     return a[1] == b[1]
-
 
 # def even_odd_interchange(prev, curr):
 #     return is_even(prev) ^ is_even(curr)
@@ -72,8 +65,6 @@ def test_seq_length_error(n, generator, expected):
 
 
 
-
-
 # def test_prev_curr(options):
 #     for cycle in OpSeq(5, options=options, curr_prev_constraint={-1: even_odd_interchange}, loop=True):  # type: ignore[var-annotated]
 #         assert even_odd_interchange(cycle[-1], cycle[0])
@@ -81,16 +72,6 @@ def test_seq_length_error(n, generator, expected):
 #             assert even_odd_interchange(prev, curr)
 
 
-# def test_loop():
-#     assert all(  # type: ignore[var-annotated]
-#         is_different_startswith(seq[0], seq[-1]) and is_equal_endswith(seq[1], seq[-1])
-#         for seq in OpSeq(
-#             4,
-#             options=('A0', 'A1', 'C0', 'D0', 'D1'),
-#             curr_prev_constraint={-1: is_different_startswith, -2: is_equal_endswith},
-#             loop=True,
-#         )
-#     )
 
 
 # @pytest.mark.parametrize('parallel', [False, True])
