@@ -12,4 +12,4 @@
 
 class SeqLengthError(ValueError):
     def __init__(self) -> None:
-        super().__init__('generator should return seqs of length len(prefix) + 1')
+        super().__init__('generator generated sequence of length > n')

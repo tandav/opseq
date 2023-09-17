@@ -6,13 +6,24 @@ from opseq import OpSeq
 def test_simple(generator1):
     assert list(OpSeq(2, generator1)) == [(0, 0), (0, 1), (1, 0), (1, 1)]
 
-def bad_generator(seq):
+
+def gen1(seq):
+    yield seq + (0, 1)
+
+def gen2(seq):
     yield seq + (0, 1)
 
 
-def test_seq_length_error(generator1):
-    with pytest.raises(SeqLengthError):
-        list(OpSeq(3, bad_generator))
+@pytest.mark.parametrize('n, generator, expected', [
+    (2, gen1, [(0, 1)]),
+    (3, gen1, SeqLengthError),
+])
+def test_seq_length_error(n, generator, expected):
+    if expected is SeqLengthError:
+        with pytest.raises(SeqLengthError):
+            list(OpSeq(n, generator))
+    else:
+        assert list(OpSeq(n, generator)) == expected
 
 # from __future__ import annotations
 

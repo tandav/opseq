@@ -3,7 +3,6 @@ from collections.abc import Iterable
 import typing as tp
 from opseq.types import Seq
 from opseq.types import Op
-from opseq.exceptions import SeqLengthError
 from collections.abc import Generator
 
 class Lookback:
@@ -40,10 +39,3 @@ class UniqueSeq:
             return False
         self.seen_keys.add(k)
         return True
-
-
-def seq_length(seqs: Iterable[Seq[Op]], length: int) -> Generator[Seq[Op], None, None]:
-    for seq in seqs:
-        if len(seq) != length:
-            raise SeqLengthError
-        yield seq

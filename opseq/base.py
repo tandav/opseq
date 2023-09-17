@@ -62,9 +62,10 @@ class OpSeqBase:
             return
         if len(prefix) < self.n:
             seqs = self.generator(prefix)
-            seqs = constraints_.seq_length(seqs, len(prefix) + 1)
             yield from itertools.chain.from_iterable(self._iter(seq) for seq in seqs)
             return
+        if len(prefix) > self.n:
+            raise exceptions.SeqLengthError
         if not all(constraint(prefix) for constraint in self.constraints):
             return
         yield prefix
