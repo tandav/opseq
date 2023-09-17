@@ -39,11 +39,11 @@ def test_unique_key_op(generator, key, expected):
     assert list(OpSeq(2, generator, unique_key_op=key)) == expected
 
 
-# @pytest.mark.parametrize('index, constraint, expected', [
-#     (-1, lambda prev, curr: prev != curr, [(0, 1), (1, 0)]),
-# ])
-# def test_lookback_constraint(generator1, index, constraint, expected):
-#     generator = constraints.lookback_constraint(index, constraint)(generator1)
-#     assert list(OpSeq(2, generator)) == expected
+@pytest.mark.parametrize('constraints, expected', [
+    ({-1: lambda prev, curr: prev != curr}, [(0, 1), (1, 0)]),
+    ({-1: lambda prev, curr: prev == curr}, [(0, 0), (1, 1)]),
+])
+def test_lookback_constraint(generator1, constraints, expected):
+    assert list(OpSeq(2, generator1, lookback_constraints=constraints)) == expected
 
 

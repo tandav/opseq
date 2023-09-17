@@ -22,33 +22,25 @@ class OpSeqBase:
         self,
         n: int,
         generator: Callable,
+        prefix: Seq[Op] = (),
         constraints: Iterable[Constraint[Op]] = (),
         prefix_constraints: Iterable[Constraint[Op]] = (),
-        # lookback_constraints: Iterable[LookbackConstraint[Op]] = (),
-        # unique_key: Callable[[Op], Any] | None = None,
+        lookback_constraints: LookbackConstraint[Op] | None = None,
         unique_key_op: UniqueKeyOp[Op] | None = None,
         unique_key_seq: UniqueKeySeq[Op] | None = None,
-        prefix: Seq[Op] = (),
         # loop: bool = False,
     ):
-        # arg validation
-        # if lookback_constraint is not None:
-            # generator = util.lookback_constraint(lookback_constraint)(generator)
-        # if curr_prev_constraint is not None:
-        #     if any(k >= 0 for k in curr_prev_constraint):
-        #         raise KeyError('curr_prev_constraint keys must be negative')
-        #     if abs(max(curr_prev_constraint.keys())) >= n:
-        #         raise IndexError('max index to look back in curr_prev_constraint should be less than n')
-
         # attributes
         self.n = n
         self.generator = generator
         self.constraints = list(constraints)
         self.prefix_constraints = list(prefix_constraints)
-        # self.curr_prev_constraint = curr_prev_constraint
-        # self.candidate_constraint = candidate_constraint
+
+        if lookback_constraints is not None:
+            for index, constraint in lookback_constraints.items(): 
+                self.prefix_constraints.append(constraints_.Lookback(index, constraint))
+
         # self.i_constraints = i_constraints
-        # self.unique_key_op = unique_key_op
         self.seen_keys = set()
 
         if unique_key_op is not None:
@@ -59,8 +51,6 @@ class OpSeqBase:
 
         self.prefix = prefix
         # self.loop = loop
-
-
 
     def __iter__(self) -> Generator[Seq[Op], None, None]:
         self.seen_keys.clear()
