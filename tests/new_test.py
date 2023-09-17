@@ -2,8 +2,8 @@ import pytest
 
 from functools import partial
 from opseq import OpSeq
-from opseq.util import constraint
-from opseq.util import lookback_constraint
+from opseq.constraints import constraint
+from opseq.constraints import lookback_constraint
 
 
 def generator0(seq, options):

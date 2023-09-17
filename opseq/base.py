@@ -13,7 +13,7 @@ from opseq.types import LookbackConstraint
 from opseq.types import Seq
 from opseq.types import Constraint
 from opseq.types import IConstraint
-from opseq import util
+from opseq import constraints
 
 
 class OpSeqBase(abc.ABC):
