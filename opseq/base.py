@@ -59,15 +59,15 @@ class OpSeqBase(abc.ABC):
     def _iter(self, prefix: Seq[Op] = ()) -> Generator[Seq[Op], None, None]:
         if prefix and not all(constraint(prefix) for constraint in self.prefix_constraints):
             return
-        if len(prefix) == self.n:
-            if not all(constraint(prefix) for constraint in self.constraints):
-                return
-            yield prefix
+        if len(prefix) < self.n:
+            yield from itertools.chain.from_iterable(
+                self._iter(seq)
+                for seq in self.generator(prefix)
+            )
             return
-        yield from itertools.chain.from_iterable(
-            self._iter(seq)
-            for seq in self.generator(prefix)
-        )
+        if not all(constraint(prefix) for constraint in self.constraints):
+            return
+        yield prefix
 
 
 
