@@ -15,6 +15,11 @@ import tqdm
 from opseq.types import Op
 
 
-class OpSeqOptions(OpSeqBase):
-    def generate_options(self, seq: tuple[Op, ...]) -> Generator[Op, None, None]:
-        yield from self.options
+# class OpSeqOptions(OpSeqBase):
+#     def generate_options(self, seq: tuple[Op, ...]) -> Generator[Op, None, None]:
+#         yield from self.options
+
+
+class OpSeq(OpSeqBase): ...
+    # def generate_options(self, seq: tuple[Op, ...]) -> Generator[Op, None, None]:
+    #     yield from self.options

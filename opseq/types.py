@@ -8,6 +8,6 @@ Op = TypeVar('Op')
 OpsFixedPerStep = Sequence[Iterable[Op]]
 OpsCallableFromCurr = Callable[[Op], Iterable[Op]]
 OpsCallableNoArgs = Callable[[], Iterable[Op]]
-CurrPrevConstraint = dict[int, Callable[[Op, Op], bool]]
+LookbackConstraint = dict[int, Callable[[Op, Op], bool]]
 CandidateConstraint = Callable[[tuple[Op, ...]], bool]
 IConstraint = dict[int, Callable[[Op], bool]]
