@@ -1,6 +1,7 @@
 import pytest
 from opseq.exceptions import SeqLengthError
 from opseq import OpSeq
+from opseq.generators import AppendOp
 
 
 def test_simple(generator1):
@@ -29,15 +30,18 @@ def test_seq_length_error(n, generator, expected):
     else:
         assert list(OpSeq(n, generator)) == expected
 
+
+
+def test_prefix():
+    options = 0, 1, 2, 3
+    prefix = options[:3]
+    assert all(seq[:len(prefix)] == prefix for seq in OpSeq(5, AppendOp(options), prefix=prefix))
+
+
+
 # from __future__ import annotations
 
 # from collections import Counter
-
-
-
-
-
-
 
 
 
@@ -54,18 +58,6 @@ def test_seq_length_error(n, generator, expected):
 # def options_callable_1(x):
 #     return [x + 1, x * 10]
 
-
-# @pytest.fixture
-# def options() -> tuple[int, ...]:
-#     return 0, 1, 2, 3
-
-
-
-
-# @pytest.mark.parametrize('parallel', [False, True])
-# def test_prefix(options, parallel):
-#     prefix = options[:3]
-#     assert all(seq[:len(prefix)] == prefix for seq in OpSeq(5, options=options, prefix=prefix, parallel=parallel))  # type: ignore[var-annotated]
 
 
 
