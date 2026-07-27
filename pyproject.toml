@@ -89,7 +89,7 @@ disallow_untyped_defs = false
 
 # ==============================================================================
 
-[tool.ruff]
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = [
     "E501",  # line too long
@@ -98,8 +98,6 @@ ignore = [
     "D", # docstrings
     "ERA001",
     "N802",
-    "ANN101",
-    "ANN102",
     "ANN401",
     "EM101",
     "EM102",
@@ -114,20 +112,25 @@ ignore = [
     "FIX002",
     "FIX004",
     "B028",
+    "CPY001", # missing copyright notice
+    "DOC201", # missing Returns section in docstring
+    "PLR0917", # too-many-positional-arguments
+    "FBT", # boolean positional args: loop= and parallel= are public API, keep them as-is
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = [
     "S101",
     "PLR2004",
     "ANN",
+    "ARG", # stub constraints must accept the args they ignore
     "PT001",
     "PT011",
     "PT023",
     "N806",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-single-line = true
 
 # ==============================================================================
@@ -148,6 +151,7 @@ disable = [
     "import-outside-toplevel",
     "unused-variable",
     "too-many-arguments",
+    "too-many-positional-arguments",
     "too-many-instance-attributes",
     "too-many-locals",
     "too-few-public-methods",
@@ -184,4 +188,4 @@ exclude = [
 # ==============================================================================
 
 [tool.flake8]
-ignore = ['E501', 'W503', 'W504', 'FNE008']
+ignore = ['E501', 'W503', 'W504', 'FNE008', 'FNE005'] # FNE005: __call__ is a dunder, it cannot be renamed

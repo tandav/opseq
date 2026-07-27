@@ -1,14 +1,17 @@
 from __future__ import annotations
-# import functools
-from collections.abc import Iterable
+
 import typing as tp
-from opseq.types import Seq
+
+# import functools
 from opseq.types import Op
-from collections.abc import Generator
+
+if tp.TYPE_CHECKING:
+    from opseq.types import Seq
+    from opseq.types import UniqueKeyOp
 
 
-class Lookback:
-    def __init__(self, index, constraint, loop: bool = False):
+class Lookback(tp.Generic[Op]):
+    def __init__(self, index: int, constraint: tp.Callable[[Op, Op], bool], loop: bool = False) -> None:
         if index >= 0:
             raise KeyError('constraint index must be negative')
         self.index = index
@@ -16,7 +19,7 @@ class Lookback:
         self.loop = loop
 
     @classmethod
-    def from_dict(cls, d: dict[int, tp.Callable[[Op, Op], bool]], loop: bool = False) -> list[Lookback]:
+    def from_dict(cls, d: dict[int, tp.Callable[[Op, Op], bool]], loop: bool = False) -> list[Lookback[Op]]:
         return [cls(index, constraint, loop) for index, constraint in d.items()]
 
     def __call__(self, seq: Seq[Op]) -> bool:
@@ -32,21 +35,21 @@ class Lookback:
         return self.constraint(seq[self.index - 1], seq[-1])
 
 
-class UniqueOp:
-    def __init__(self, key):
+class UniqueOp(tp.Generic[Op]):
+    def __init__(self, key: UniqueKeyOp[Op]) -> None:
         self.key = key
 
     def __call__(self, seq: Seq[Op]) -> bool:
         return len(seq) == len(set(map(self.key, seq)))
 
 
-class LenConstraint:
-    def __init__(self, length: int, constraint: tp.Callable[[Seq[Op]], bool]):
+class LenConstraint(tp.Generic[Op]):
+    def __init__(self, length: int, constraint: tp.Callable[[Seq[Op]], bool]) -> None:
         self.length = length
         self.constraint = constraint
 
     @classmethod
-    def from_dict(cls, d: dict[int, tp.Callable[[Seq[Op]], bool]]) -> list[LenConstraint]:
+    def from_dict(cls, d: dict[int, tp.Callable[[Seq[Op]], bool]]) -> list[LenConstraint[Op]]:
         return [cls(length, constraint) for length, constraint in d.items()]
 
     def __call__(self, seq: Seq[Op]) -> bool:

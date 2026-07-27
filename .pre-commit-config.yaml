@@ -3,13 +3,13 @@ ci:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-yaml
       - id: check-json
       - id: check-ast
-      - id: check-byte-order-marker
+      - id: fix-byte-order-marker
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-docstring-first
@@ -24,46 +24,46 @@ repos:
       - id: requirements-txt-fixer
 
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v3.0.0
+    rev: v4.0.0
     hooks:
       - id: add-trailing-comma
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.9.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
 
-  - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v2.0.2
+  - repo: https://github.com/hhatto/autopep8
+    rev: v2.3.2
     hooks:
       - id: autopep8
 
   - repo: https://github.com/PyCQA/autoflake
-    rev: v2.2.0
+    rev: v2.3.3
     hooks:
       - id: autoflake
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.278
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.17.5
+    rev: v4.0.6
     hooks:
       - id: pylint
         # additional_dependencies: ["pylint-per-file-ignores"]
         # https://github.com/christopherpickering/pylint-per-file-ignores/issues/76
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v2.3.0
     hooks:
     - id: mypy
       additional_dependencies: [svg.py]
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 7.3.0
     hooks:
     - id: flake8
       additional_dependencies: [Flake8-pyproject, flake8-functions-names]
