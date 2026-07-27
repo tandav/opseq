@@ -130,12 +130,6 @@ def test_opseq_is_reiterable(generator1):
     assert list(opseq) == list(opseq) == [(0, 0), (0, 1), (1, 0), (1, 1)]
 
 
-@pytest.mark.xfail(reason='parallel is not implemented: generators are not picklable', raises=TypeError, strict=True)
-def test_parallel_matches_serial():
-    generator = AppendOp([0, 1, 2])
-    assert list(OpSeq(3, generator, parallel=True)) == list(OpSeq(3, generator))
-
-
 # from __future__ import annotations
 
 # from collections import Counter

@@ -11,5 +11,8 @@
 
 
 class SeqLengthError(ValueError):
-    def __init__(self) -> None:
-        super().__init__('generator generated sequence of length > n')
+    # the default argument keeps the exception picklable: pickle rebuilds an
+    # exception as cls(*args), and args is the message passed to ValueError.
+    # workers raise this across a process boundary, so it must round-trip.
+    def __init__(self, message: str = 'generator generated sequence of length > n') -> None:
+        super().__init__(message)

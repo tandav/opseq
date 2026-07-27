@@ -57,6 +57,13 @@ tag = true
 
 # ==============================================================================
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: timing sensitive benchmarks. deselect with -m 'not slow'",
+]
+
+# ==============================================================================
+
 [tool.mypy]
 # todo: review this
 pretty = true
