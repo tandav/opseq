@@ -1,6 +1,7 @@
 import pytest
-from opseq.exceptions import SeqLengthError
+
 from opseq import OpSeq
+from opseq.exceptions import SeqLengthError
 from opseq.generators import AppendOp
 
 
@@ -13,16 +14,19 @@ def test_length(generator1):
 
 
 def gen1(seq):
-    yield seq + (0, 1)
+    yield (*seq, 0, 1)
+
 
 def gen2(seq):
-    yield seq + (0, 1)
+    yield (*seq, 0, 1)
 
 
-@pytest.mark.parametrize('n, generator, expected', [
-    (2, gen1, [(0, 1)]),
-    (3, gen1, SeqLengthError),
-])
+@pytest.mark.parametrize(
+    ('n', 'generator', 'expected'), [
+        (2, gen1, [(0, 1)]),
+        (3, gen1, SeqLengthError),
+    ],
+)
 def test_seq_length_error(n, generator, expected):
     if expected is SeqLengthError:
         with pytest.raises(SeqLengthError):
@@ -31,20 +35,110 @@ def test_seq_length_error(n, generator, expected):
         assert list(OpSeq(n, generator)) == expected
 
 
-
 def test_prefix():
     options = 0, 1, 2, 3
     prefix = options[:3]
     assert all(seq[:len(prefix)] == prefix for seq in OpSeq(5, AppendOp(options), prefix=prefix))
 
 
+def test_prefix_of_length_n_is_the_only_seq():
+    assert list(OpSeq(2, AppendOp([0, 1]), prefix=(0, 1))) == [(0, 1)]
+
+
+def test_prefix_longer_than_n_raises(generator1):
+    with pytest.raises(SeqLengthError):
+        list(OpSeq(2, generator1, prefix=(0, 1, 0)))
+
+
+def test_prefix_is_coerced_to_tuple(generator1):
+    assert list(OpSeq(2, generator1, prefix=[0])) == [(0, 0), (0, 1)]
+
+
+def test_n_zero_yields_the_empty_seq(generator1):
+    assert list(OpSeq(0, generator1)) == [()]
+
+
+def test_empty_prefix_skips_prefix_constraints(generator1):
+    # the empty prefix is never passed to prefix_constraints, so n=0 yields () regardless
+    assert list(OpSeq(0, generator1, prefix_constraints=[lambda seq: False])) == [()]
+
+
+def test_prefix_constraints_see_every_prefix_including_complete_seqs(generator1):
+    seen = []
+
+    def record(seq):
+        seen.append(seq)
+        return True
+
+    list(OpSeq(2, generator1, prefix_constraints=[record]))
+    assert seen == [(0,), (0, 0), (0, 1), (1,), (1, 0), (1, 1)]
+
+
+def test_constraints_see_only_complete_seqs(generator1):
+    seen = []
+
+    def record(seq):
+        seen.append(seq)
+        return True
+
+    list(OpSeq(2, generator1, constraints=[record]))
+    assert seen == [(0, 0), (0, 1), (1, 0), (1, 1)]
+
+
+def test_multiple_constraints_all_must_pass():
+    generator = AppendOp([0, 1, 2])
+    assert list(OpSeq(2, generator, constraints=[lambda seq: seq[0] == 0, lambda seq: seq[1] == 2])) == [(0, 2)]
+
+
+def test_multiple_prefix_constraints_all_must_pass():
+    generator = AppendOp([0, 1, 2])
+    assert list(OpSeq(2, generator, prefix_constraints=[lambda seq: seq[0] == 0, lambda seq: seq[-1] != 1])) == [(0, 0), (0, 2)]
+
+
+def test_generator_yielding_nothing():
+    assert list(OpSeq(2, lambda seq: iter(()))) == []
+
+
+def test_generator_may_yield_non_tuples():
+    def list_generator(seq):
+        yield [*seq, 0]
+
+    assert list(OpSeq(2, list_generator)) == [(0, 0)]
+
+
+def variable_length_generator(seq, n=3):
+    yield (*seq, 0)
+    if len(seq) + 2 <= n:
+        yield (*seq, 1, 1)
+
+
+def test_generator_may_extend_by_more_than_one_op():
+    assert list(OpSeq(3, variable_length_generator)) == [(0, 0, 0), (0, 1, 1), (1, 1, 0)]
+
+
+def test_generator_overshooting_n_raises():
+    def overshooting_generator(seq):
+        yield (*seq, 0)
+        yield (*seq, 1, 1)
+
+    with pytest.raises(SeqLengthError):
+        list(OpSeq(3, overshooting_generator))
+
+
+def test_opseq_is_reiterable(generator1):
+    opseq = OpSeq(2, generator1)
+    assert list(opseq) == list(opseq) == [(0, 0), (0, 1), (1, 0), (1, 1)]
+
+
+@pytest.mark.xfail(reason='parallel is not implemented: generators are not picklable', raises=TypeError, strict=True)
+def test_parallel_matches_serial():
+    generator = AppendOp([0, 1, 2])
+    assert list(OpSeq(3, generator, parallel=True)) == list(OpSeq(3, generator))
+
 
 # from __future__ import annotations
 
 # from collections import Counter
-
-
-
 
 
 # def is_candidate_constraint(candidate: tuple[str, ...]) -> bool:
@@ -57,8 +151,6 @@ def test_prefix():
 
 # def options_callable_1(x):
 #     return [x + 1, x * 10]
-
-
 
 
 # @pytest.mark.parametrize('parallel', [False, True])
