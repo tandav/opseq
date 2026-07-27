@@ -1,0 +1,13 @@
+version: '3'
+tasks:
+  test:
+    cmd: uv run pytest -v
+
+  bumpver:
+    desc: 'Bump version. Pass --<part>. Usage example: task bumpver -- --minor'
+    cmds:
+      - uv run bumpver update --no-fetch --no-commit --no-tag-commit {{.CLI_ARGS}}
+      - uv sync --all-extras
+      - git add .
+      - git commit -m "bump version v$(uv version --short)"
+      - git tag -a v$(uv version --short) -m "bump version v$(uv version --short)"
